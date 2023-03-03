@@ -75,12 +75,11 @@ object TodoMvcApp:
         ul {
           cls("todo-list")
           // custom delta with appendChild/removeChild
-          chil
 //          itemsVar.map(_.map(item => renderTodoItem(item.id, item))).adapt(children)
           itemsVar.splitKeys(renderTodoItem).ddescend.map{
-            case TreeMapDelta.Insert(k, v) => ChildNodeDelta.Replace(itemsVar )
             case TreeMapDelta.Insert(k, v) if k == lastId => ChildNodeDelta.Append(???)
-            case TreeMapDelta.Delete(k) => ChildNodeDelta.Remove()
+            case TreeMapDelta.Insert(k, v) => ChildNodeDelta.Replace(???, ???)
+            case TreeMapDelta.Delete(k) => ??? // ChildNodeDelta.Remove(???, ???)
           }.adaptNow(childrenDelta.dsink)
 //          children <-- $todoItems.split(_.id)(renderTodoItem)
         }
@@ -198,10 +197,10 @@ object TodoMvcApp:
     }
 
   // Every little thing in Laminar can be abstracted away
-  private def hideIfNoItems(using html.Element): Unit =
-    itemsVar.map { items =>
-      if (items.nonEmpty) "" else "none"
-    }.adaptNow(display)
+  private def hideIfNoItems(using html.Element): Unit = ()
+//    itemsVar.map { items =>
+//      if (items.nonEmpty) "" else "none"
+//    }.adaptNow(display)
 
 
   // --- Generic helpers ---
@@ -212,7 +211,6 @@ object TodoMvcApp:
     onkeyup.filter(_.keyCode == dom.KeyCode.Enter)
 
   def init =
-    itemsVar.set(List[TodoItem]())
     filterVar.set(ShowAll)
 end TodoMvcApp
 

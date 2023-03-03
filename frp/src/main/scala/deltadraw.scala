@@ -46,16 +46,16 @@ class ChildNodeRelayVar(initial: dom.Node) extends UDeltaRelayVar[dom.Node, Chil
       n = n.nextSibling
 
   def replace(n: dom.Node, old: dom.Node): Unit =
-    integrate(Replace(k, v))
+    integrate(Replace(n, old))
 
   def insert(n: dom.Node, before: dom.Node): Unit =
-    integrate(Insert(k, v))
+    integrate(Insert(n, before))
 
   def remove(n: dom.Node): Unit =
-    integrate(Remove(k))
+    integrate(Remove(n))
 
   def append(n: dom.Node): Unit =
-    integrate(Append(k))
+    integrate(Append(n))
 
   def removeAll(p: dom.Node => Boolean): Int =
     val todo = scalajs.js.Array[dom.Node]()

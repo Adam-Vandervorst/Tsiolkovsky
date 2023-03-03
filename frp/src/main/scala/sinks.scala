@@ -16,7 +16,7 @@ def display(using e: dom.html.Element): Sink[String, Unit] =
   (s: String) => e.style.display = s
 
 def children(using e: dom.html.Element): Sink[Seq[dom.html.Element], Unit] =
-  (s: Seq[dom.html.Element]) => e.childNodes.replaceChildren(s*)
+  (s: Seq[dom.html.Element]) => e.replaceChildren(s*)
 
 def child(using e: dom.html.Element): Sink[dom.html.Element, Unit] =
   (s: dom.html.Element) => e.replaceChildren(s)
