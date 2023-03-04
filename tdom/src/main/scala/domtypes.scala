@@ -39,3 +39,5 @@ type TagOf[X <: String] <: dom.html.Element = X match
   case "style" => dom.html.Style
   case "script" => dom.html.Script
   case "link" => dom.html.Link
+  case "label" => dom.html.Label
+  case "span" => dom.html.Span

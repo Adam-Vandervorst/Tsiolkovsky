@@ -29,8 +29,8 @@ lazy val frp = crossProject(JSPlatform).crossType(CrossType.Pure).withoutSuffixF
       name := "Tsiolkovsky-reactive",
       organization := "be.adamv",
       libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.0.0",
-      libraryDependencies += "be.adamv" %%% "momentum" % "0.3.0",
-      libraryDependencies += "be.adamv" %%% "impuls" % "0.2.2",
+      libraryDependencies += "be.adamv" %%% "momentum" % "0.3.1",
+      libraryDependencies += "be.adamv" %%% "impuls" % "0.2.2c",
       scalaJSUseMainModuleInitializer := true,
       publishTo := Some(Resolver.file("local-ivy", file("~")))
   )

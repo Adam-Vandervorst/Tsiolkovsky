@@ -1,6 +1,9 @@
 package be.adamv.tsiolkovsky.tdom
 
 export org.scalajs.dom.html
+import org.scalajs.dom.{CustomEvent, CustomEventInit}
+
+import scala.scalajs.js.UndefOr
 
 
 def spawn(tag: String) =
@@ -8,6 +11,7 @@ def spawn(tag: String) =
     val e = createElement(tag)
     init(using e)
     p.appendChild(e)
+    e.dispatchEvent(CustomEvent("mount", new CustomEventInit { detail = p }))
     e
 
 def createElement(tag: String): TagOf[tag.type] =
@@ -47,6 +51,9 @@ def table = spawn("table")
 
 def button = spawn("button")
 def input = spawn("input")
+
+def label = spawn("label")
+def span = spawn("label")
 
 
 extension (sc: StringContext)(using p: html.Element)
