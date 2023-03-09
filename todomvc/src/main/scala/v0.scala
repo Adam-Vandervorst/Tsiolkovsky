@@ -3,7 +3,7 @@ package example
 
 import be.adamv.momentum.concrete.{Relay, Var}
 import be.adamv.momentum.{Descend, Sink, adaptNow, updatePresent, value, zipLeft, given}
-import be.adamv.impuls.delta.{BitRelayVar, TreeMapDelta, TreeMapRelayVar, given}
+import be.adamv.impuls.delta.{BitRelayVar, BitDelta, TreeMapDelta, TreeMapRelayVar, given}
 import be.adamv.tsiolkovsky.tdom.{N, a, button, cls, div, footer, h1, html, input, label, li, set, ul, span}
 import be.adamv.tsiolkovsky.frp.{ChildNodeDelta, child, children, childrenDelta, clsToggle, display, onclick, ondblclick, onkeyup, defaultValue, onmount, onblur, checked, oninput}
 
@@ -20,8 +20,6 @@ object TodoMvcApp:
     case ShowActive extends Filter("Active", !_.completed)
     case ShowCompleted extends Filter("Completed", _.completed)
   import Filter.*
-
-  val filters: List[Filter] = ShowAll :: ShowActive :: ShowCompleted :: Nil
 
   enum Command:
     case Create(itemText: String)
@@ -79,13 +77,11 @@ object TodoMvcApp:
           cls("todo-list")
           val rendered = itemsVar.splitKeys(renderTodoItem)
           rendered.ddescend.map{
-            case TreeMapDelta.Insert(k, v) if k == lastId =>
-
-              ChildNodeDelta.Append(v)
+            case TreeMapDelta.Insert(k, v) if k == lastId => ChildNodeDelta.Append(v)
             case TreeMapDelta.Insert(k, v) => ChildNodeDelta.Replace(v, rendered.value(k))
             case TreeMapDelta.Delete(k) => ChildNodeDelta.Remove(rendered.value(k))
           }.adaptNow(childrenDelta.dsink)
-          rendered.ddescend.map(_ => rendered.value.values.toSeq).adaptNow(children)
+//          rendered.ddescend.map(_ => rendered.value.values.toSeq).adaptNow(children)
 //          itemsVar.dsink.set(TreeMapDelta.Delete[Int, example.TodoMvcApp.TodoItem](0))
         }
       }
@@ -111,21 +107,21 @@ object TodoMvcApp:
   private def renderTodoItem(itemId: Int, $item: Descend[Unit, TodoItem, Unit]): html.UList ?=> html.LI =
     dom.console.log(s"rendering $itemId")
     $item.adaptNow(td => println(s"test $td"))
-    val isEditingVar = Relay[Boolean]()
+    val isEditingVar = BitRelayVar(true)
     val updateTextObserver = commandObserver.contramap[Command] { updateCommand =>
-      isEditingVar.set(false)
+      isEditingVar.setLow()
       updateCommand
     }
     li {
 //      filterVar.zipLeft($item).map((f: Filter, td: TodoItem) => if f.passes(td) then "" else "none").adaptNow(display)
       $item.map(item => "completed" -> item.completed).tapEach(i => println(s"compl $i")).adaptNow(clsToggle)
-      ondblclick.filter(_ => !isEditingVar.value.get).map(_ => true).adaptNow(isEditingVar)
+      ondblclick.filter(_ => !isEditingVar.value).map(_ => ()).adaptNow(isEditingVar.riseHandle)
 
-      isEditingVar.adaptNow(children.contramap[Boolean] {
-        case true =>
+      isEditingVar.ddescend.map {
+        case BitDelta.Rise =>
           println("in true")
           renderTextUpdateInput(itemId, $item, updateTextObserver) :: Nil
-        case false =>
+        case BitDelta.Fall =>
           println("in false")
           List(
             renderCheckboxInput(itemId, $item),
@@ -139,13 +135,13 @@ object TodoMvcApp:
               onclick.map(_ => Delete(itemId)).adaptNow(commandObserver)
             }
           )
-      })
+      }.adaptNow(children)
       println("pre set false")
-      isEditingVar.set(false)
+      isEditingVar.setLow()
       println("post set false")
     }
 
-  // Note that we pass reactive variables: `$item` for reading, `updateTextObserver` for writing
+// Note that we pass reactive variables: `$item` for reading, `updateTextObserver` for writing
   private def renderTextUpdateInput(itemId: Int,
                                     $item: Descend[Unit, TodoItem, Unit],
                                     updateTextObserver: Sink[Command, Unit]): html.Element ?=> html.Input  =
@@ -184,7 +180,7 @@ object TodoMvcApp:
       }
       ul {
         cls("filters")
-        filters.map(filter => li { renderFilterButton(filter) })
+        Filter.values.foreach(filter => li { renderFilterButton(filter) })
       }
 
       itemsVar.drelay.map(_ => itemsVar.value)
@@ -200,18 +196,14 @@ object TodoMvcApp:
     }
 
   private def renderFilterButton(filter: Filter): html.Element ?=> html.Element =
-
-
     a {
       filterVar.map(f => "selected" -> (f == filter)).adaptNow(clsToggle)
       onclick.map(e => { e.preventDefault(); filter }).adaptNow(filterVar)
       N"${filter.name}"
     }
 
-  private def hideIfNoItems(using html.Element): Unit = ()
-//    itemsVar.map { items =>
-//      if (items.nonEmpty) "" else "none"
-//    }.adaptNow(display)
+  private def hideIfNoItems(using e: html.Element): Unit =
+    itemsVar.ddescend.map(_ => if itemsVar.value.nonEmpty then "" else "none").adaptNow(display)
 
 
   // --- Generic helpers ---
