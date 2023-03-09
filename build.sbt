@@ -30,7 +30,7 @@ lazy val frp = crossProject(JSPlatform).crossType(CrossType.Pure).withoutSuffixF
       organization := "be.adamv",
       libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.0.0",
       libraryDependencies += "be.adamv" %%% "momentum" % "0.3.1",
-      libraryDependencies += "be.adamv" %%% "impuls" % "0.2.2c",
+      libraryDependencies += "be.adamv" %%% "impuls" % "0.2.2",
       scalaJSUseMainModuleInitializer := true,
       publishTo := Some(Resolver.file("local-ivy", file("~")))
   )
@@ -40,6 +40,17 @@ lazy val todomvc = crossProject(JSPlatform).crossType(CrossType.Pure).withoutSuf
   .dependsOn(dom, frp)
   .settings(
     name := "Tsiolkovsky-todo",
+    organization := "be.adamv",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.0.0",
+    scalaJSUseMainModuleInitializer := true,
+    publish / skip := true
+  )
+
+lazy val hellocounter = crossProject(JSPlatform).crossType(CrossType.Pure).withoutSuffixFor(JSPlatform)
+  .in(file("hellocounter"))
+  .dependsOn(dom, frp)
+  .settings(
+    name := "Tsiolkovsky-hellocounter",
     organization := "be.adamv",
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.0.0",
     scalaJSUseMainModuleInitializer := true,
