@@ -48,6 +48,16 @@ object HelloCounterApp:
           N"Hello Counter"
         }
         counter
+        button {
+          cls("increment")
+          commandSink.contramap(e => Command.Increment) <-- onclick
+          N"Increment"
+        }
+        button {
+          cls("reset")
+          commandSink.contramap(e => Command.Reset) <-- onclick
+          N"Reset"
+        }
       }
     }
 
