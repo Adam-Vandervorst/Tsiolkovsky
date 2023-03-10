@@ -1,4 +1,4 @@
-package example
+package todomvc
 
 
 import be.adamv.momentum.concrete.{Relay, Var}

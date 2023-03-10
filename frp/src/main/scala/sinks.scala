@@ -19,7 +19,7 @@ def children(using e: dom.html.Element): Sink[Seq[dom.html.Element], Unit] =
   (s: Seq[dom.html.Element]) => e.replaceChildren(s*)
 
 def child(using e: dom.Node): Sink[dom.Node, Unit] =
-  (s: dom.Node) => if e.hasChildNodes() then e.replaceChild(e.firstChild, s) else e.appendChild(s)
+  (s: dom.Node) => if e.hasChildNodes() then e.replaceChild(s, e.firstChild) else e.appendChild(s)
 
 def value(using e: dom.html.Select | dom.html.Option): Sink[String, Unit] =
   (s: String) => e match
