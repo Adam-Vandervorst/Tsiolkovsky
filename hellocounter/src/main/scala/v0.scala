@@ -33,14 +33,14 @@ object HelloCounterApp:
 
   private val commandHandler: Sink[Command, Unit] = {
     case Command.Increment =>
-      counterState.set(counterState.value.get + 1)
+      counterState.updatePresent(_ + 1)
     case Command.Reset =>
       counterState.set(0)
   }
   private val commandSink: Sink[Command, Unit] = commandHandler.eachTapped(c =>
     println(s"Command received: $c"))
 
-  lazy val node: html.Element ?=> html.Div =
+  val node: html.Element ?=> html.Div =
     div {
       cls("hellocounterapp")
       div {
@@ -61,7 +61,7 @@ object HelloCounterApp:
       }
     }
 
-  lazy val counter: html.Element ?=> html.Div =
+  val counter: html.Element ?=> html.Div =
     div {
       // the state (Int) needs to be converted to a child element (dom.Element)
       // this can be done by contramap'ing on the sink or map'ing on the descend
@@ -75,6 +75,6 @@ end HelloCounterApp
 
 
 @main def m =
-  given html.Div = dom.document.querySelector("#main").asInstanceOf
-  HelloCounterApp.node
+  // given html.Div = dom.document.querySelector("#main").asInstanceOf
+  HelloCounterApp.node(using dom.document.querySelector("#main").asInstanceOf)
   HelloCounterApp.init()
