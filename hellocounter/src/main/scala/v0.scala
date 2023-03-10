@@ -1,12 +1,11 @@
-
-package example
+package hellocounter
 
 
 import be.adamv.momentum.concrete.{Relay, Var}
-import be.adamv.momentum.{Descend, Sink, Source, adaptNow, updatePresent, value, zipLeft, given}
-import be.adamv.impuls.delta.{BitRelayVar, TreeMapDelta, TreeMapRelayVar, given}
-import be.adamv.tsiolkovsky.tdom.{N, a, button, cls, div, footer, h1, html, input, label, li, set, ul, span}
-import be.adamv.tsiolkovsky.frp.{ChildNodeDelta, child, children, childrenDelta, clsToggle, display, onclick, ondblclick, onkeyup, defaultValue, onmount, onblur, checked, oninput, ontimeout}
+import be.adamv.momentum.{Descend, Sink, Source, adaptNow, updatePresent, value, given}
+import be.adamv.impuls.delta.{CountDelta, CountRelayVar, given}
+import be.adamv.tsiolkovsky.tdom.{N, button, cls, div, h1, html}
+import be.adamv.tsiolkovsky.frp.{child, onclick, timeout}
 
 import org.scalajs.dom
 
@@ -23,8 +22,7 @@ extension [A](s: Sink[A, Unit])
     s -| d
 
 object HelloCounterApp:
-  // user actions
-  enum Command:
+  enum Command: // User actions
     case Increment
     case Reset
 
@@ -50,12 +48,12 @@ object HelloCounterApp:
         counter
         button {
           cls("increment")
-          commandSink.contramap(e => Command.Increment) <-- onclick
+          commandSink.contramapTo(Command.Increment) <-- onclick
           N"Increment"
         }
         button {
           cls("reset")
-          commandSink.contramap(e => Command.Reset) <-- onclick
+          commandSink.contramapTo(Command.Reset) <-- onclick
           N"Reset"
         }
       }
@@ -63,18 +61,16 @@ object HelloCounterApp:
 
   val counter: html.Element ?=> html.Div =
     div {
-      // the state (Int) needs to be converted to a child element (dom.Element)
-      // this can be done by contramap'ing on the sink or map'ing on the descend
       child.contramap(c => N"Count: $c") <-| counterState
     }
 
   def init(): Unit =
     // Simulate user button press after 1 second
-    commandSink.contramap(_ => Command.Increment) <-- ontimeout(1000)
+    commandSink.contramapTo(Command.Increment) <-- timeout(1000)
 end HelloCounterApp
 
 
 @main def m =
-  // given html.Div = dom.document.querySelector("#main").asInstanceOf
-  HelloCounterApp.node(using dom.document.querySelector("#main").asInstanceOf)
+  val root = dom.document.querySelector("#main").asInstanceOf
+  HelloCounterApp.node(using root)
   HelloCounterApp.init()

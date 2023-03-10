@@ -39,5 +39,19 @@ def oninput(using e: dom.html.Input): Descend[Unit, dom.Event, Unit] = s =>
 def onchange(using e: dom.html.Element): Descend[Unit, dom.Event, Unit] = s =>
   _ => e.addEventListener[dom.Event]("change", s.set)
 
-def ontimeout(interval: Int): Descend[Unit, Unit, Unit] = s =>
-  _ => dom.window.setTimeout(() => s.tick(), interval) 
+def timeout(ms: Double): Descend[Unit, Unit, Unit] = s =>
+  _ => dom.window.setTimeout(() => s.tick(), ms)
+
+def interval(ms: Double): Descend[Unit, Unit, Unit] = s =>
+  _ => dom.window.setInterval(() => s.tick(), ms)
+
+//def interval(ms: Double): Descend[Boolean, Unit, Unit] = s =>
+//  var active = false
+//  var handle = 0
+//  b =>
+//    if b && !active then
+//      handle = dom.window.setInterval(() => s.tick(), ms)
+//      active = true
+//    else if !b && active then
+//      dom.window.clearInterval(handle)
+//      active = false
