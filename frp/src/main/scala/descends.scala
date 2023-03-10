@@ -4,6 +4,7 @@ import org.scalajs.dom
 import scala.scalajs.js
 
 import be.adamv.momentum.Descend
+import be.adamv.momentum.tick
 
 
 def onkeyup(using e: dom.html.Element): Descend[Unit, dom.KeyboardEvent, Unit] = s =>
@@ -37,3 +38,6 @@ def oninput(using e: dom.html.Input): Descend[Unit, dom.Event, Unit] = s =>
 
 def onchange(using e: dom.html.Element): Descend[Unit, dom.Event, Unit] = s =>
   _ => e.addEventListener[dom.Event]("change", s.set)
+
+def ontimeout(interval: Int): Descend[Unit, Unit, Unit] = s =>
+  _ => dom.window.setTimeout(() => s.tick(), interval) 

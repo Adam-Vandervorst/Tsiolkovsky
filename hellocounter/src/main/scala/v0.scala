@@ -6,7 +6,7 @@ import be.adamv.momentum.concrete.{Relay, Var}
 import be.adamv.momentum.{Descend, Sink, Source, adaptNow, updatePresent, value, zipLeft, given}
 import be.adamv.impuls.delta.{BitRelayVar, TreeMapDelta, TreeMapRelayVar, given}
 import be.adamv.tsiolkovsky.tdom.{N, a, button, cls, div, footer, h1, html, input, label, li, set, ul, span}
-import be.adamv.tsiolkovsky.frp.{ChildNodeDelta, child, children, childrenDelta, clsToggle, display, onclick, ondblclick, onkeyup, defaultValue, onmount, onblur, checked, oninput}
+import be.adamv.tsiolkovsky.frp.{ChildNodeDelta, child, children, childrenDelta, clsToggle, display, onclick, ondblclick, onkeyup, defaultValue, onmount, onblur, checked, oninput, ontimeout}
 
 import org.scalajs.dom
 
@@ -70,10 +70,7 @@ object HelloCounterApp:
 
   def init(): Unit =
     // Simulate user button press after 1 second
-    // TODO make setTimout and setInterval descends
-    dom.window.setTimeout(() =>
-      commandSink.set(Command.Increment)
-    , 1000)
+    commandSink.contramap(_ => Command.Increment) <-- ontimeout(1000)
 end HelloCounterApp
 
 
