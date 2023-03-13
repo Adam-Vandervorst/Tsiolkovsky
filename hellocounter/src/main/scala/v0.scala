@@ -1,7 +1,8 @@
 package hellocounter
 
 
-import be.adamv.momentum.concrete.{Relay, Var}
+import be.adamv.momentum.concrete.Relay
+import be.adamv.momentum.dsl.*
 import be.adamv.momentum.{Descend, Sink, Source, adaptNow, updatePresent, value, given}
 import be.adamv.impuls.delta.{CountDelta, CountRelayVar, given}
 import be.adamv.tsiolkovsky.tdom.{N, button, cls, div, h1, html}
@@ -9,17 +10,6 @@ import be.adamv.tsiolkovsky.frp.{child, onclick, timeout}
 
 import org.scalajs.dom
 
-
-// TODO move to momentum.dsl
-extension [A](s: Sink[A, Unit])
-  def <-- (d: Descend[Unit, A, Unit]) =
-    d.adaptNow(s)
-  def -| (d: Source[Option[A], Unit]) = d.value match
-    case Some(value) => s.set(value)
-    case None => ()
-  def <-|(d: Descend[Unit, A, Unit] & Source[Option[A], Unit]) =
-    s <-- d
-    s -| d
 
 object HelloCounterApp:
   enum Command: // User actions
@@ -71,6 +61,5 @@ end HelloCounterApp
 
 
 @main def m =
-  val root = dom.document.querySelector("#main").asInstanceOf
-  HelloCounterApp.node(using root)
+  HelloCounterApp.node(using dom.document.querySelector("#main").asInstanceOf)
   HelloCounterApp.init()
