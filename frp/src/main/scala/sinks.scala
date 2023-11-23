@@ -5,6 +5,8 @@ import scala.scalajs.js
 
 import be.adamv.momentum.Sink
 
+def _set(name: String, value: js.Any)(using e: dom.html.Element): Unit =
+  e.asInstanceOf[js.Dynamic].updateDynamic(name)(value)
 
 def clsToggle(using e: dom.html.Element): Sink[(String, Boolean), Unit] =
   (s: String, b: Boolean) => e.classList.toggle(s, b)
@@ -33,4 +35,4 @@ def checked(using e: dom.html.Input): Sink[Boolean, Unit] =
   (b: Boolean) => e.checked = b
 
 def autofocus(using e: dom.html.Element): Sink[Boolean, Unit] =
-  (b: Boolean) => e.autofocus = b
+  (b: Boolean) => _set("autofocus", b)
