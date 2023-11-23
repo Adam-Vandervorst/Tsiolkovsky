@@ -67,7 +67,7 @@ object TodoMvcApp:
       cls("todoapp")
       div {
         cls("header")
-        h1("todos")
+        h1 { N"todos" }
         renderNewTodoInput
       }
       div {
@@ -213,7 +213,7 @@ object TodoMvcApp:
   private val onEnterUp: html.Element ?=> Descend[Unit, dom.KeyboardEvent, Unit] =
     onkeyup.filter(_.keyCode == dom.KeyCode.Enter)
 
-  def init =
+  def init() =
 //    lastId += 1
 //    println(s"init create ${itemsVar.value}")
 //    itemsVar.insert(lastId, TodoItem(id = lastId, text = "testing", completed = false))
@@ -224,6 +224,6 @@ end TodoMvcApp
 
 @main def m =
   given html.Div = dom.document.querySelector("#board").asInstanceOf
-  TodoMvcApp.init
+  TodoMvcApp.init()
   TodoMvcApp.node
 //  TodoMvcApp.init
