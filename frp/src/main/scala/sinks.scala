@@ -31,3 +31,6 @@ def defaultValue(using e: dom.html.Input): Sink[String, Unit] =
 
 def checked(using e: dom.html.Input): Sink[Boolean, Unit] =
   (b: Boolean) => e.checked = b
+
+def autofocus(using e: dom.html.Element): Sink[Boolean, Unit] =
+  (b: Boolean) => e.autofocus = b
